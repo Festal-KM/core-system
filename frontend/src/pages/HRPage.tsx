@@ -1,5 +1,5 @@
-import { Grid, Card, CardContent, Typography, IconButton, Box } from '@mui/material';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import { Grid, Card, CardContent, Typography, IconButton } from '@mui/material';
+import WorkIcon from '@mui/icons-material/Work';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import SectionHeader from '../components/SectionHeader';
 
@@ -25,23 +25,23 @@ const cardSx = {
   p: 2,
 };
 
-const SalesPage = () => {
+const HRPage = () => {
   return (
     <>
       <SectionHeader
-        icon={<TrendingUpIcon sx={{ fontSize: 40 }} />}
-        title="営業部"
-        subtitle="営業部のコンテンツはここに表示されます。"
+        icon={<WorkIcon sx={{ fontSize: 40 }} />}
+        title="労務"
+        subtitle="労務部門の業務管理画面です。勤怠管理、給与計算、社会保険関連の業務にアクセスできます。"
       />
       <Grid container spacing={3} sx={{ mt: 2 }}>
         <Grid item xs={12} md={4}>
           <Card sx={cardSx} elevation={1}>
             <CardContent>
               <Typography variant="h6" fontWeight={500} gutterBottom>
-                顧客管理
+                勤怠管理
               </Typography>
               <Typography variant="body2" color="text.secondary" fontWeight={400} sx={{ mb: 2 }}>
-                顧客情報の管理・分析を行います
+                出退勤・休暇の管理を行います
               </Typography>
             </CardContent>
             <IconButton sx={cardActionSx}>
@@ -53,10 +53,10 @@ const SalesPage = () => {
           <Card sx={cardSx} elevation={1}>
             <CardContent>
               <Typography variant="h6" fontWeight={500} gutterBottom>
-                売上管理
+                給与計算
               </Typography>
               <Typography variant="body2" color="text.secondary" fontWeight={400} sx={{ mb: 2 }}>
-                売上データの集計・分析を行います
+                給与計算・支払い管理を行います
               </Typography>
             </CardContent>
             <IconButton sx={cardActionSx}>
@@ -68,10 +68,10 @@ const SalesPage = () => {
           <Card sx={cardSx} elevation={1}>
             <CardContent>
               <Typography variant="h6" fontWeight={500} gutterBottom>
-                営業レポート
+                社会保険
               </Typography>
               <Typography variant="body2" color="text.secondary" fontWeight={400} sx={{ mb: 2 }}>
-                営業活動のレポートを確認します
+                社会保険関連の手続きを行います
               </Typography>
             </CardContent>
             <IconButton sx={cardActionSx}>
@@ -84,4 +84,4 @@ const SalesPage = () => {
   );
 };
 
-export default SalesPage; 
+export default HRPage; 

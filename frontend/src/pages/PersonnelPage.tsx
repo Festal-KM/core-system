@@ -1,5 +1,5 @@
-import { Grid, Card, CardContent, Typography, IconButton, Box } from '@mui/material';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import { Grid, Card, CardContent, Typography, IconButton } from '@mui/material';
+import PeopleIcon from '@mui/icons-material/People';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import SectionHeader from '../components/SectionHeader';
 
@@ -25,23 +25,23 @@ const cardSx = {
   p: 2,
 };
 
-const SalesPage = () => {
+const PersonnelPage = () => {
   return (
     <>
       <SectionHeader
-        icon={<TrendingUpIcon sx={{ fontSize: 40 }} />}
-        title="営業部"
-        subtitle="営業部のコンテンツはここに表示されます。"
+        icon={<PeopleIcon sx={{ fontSize: 40 }} />}
+        title="人事"
+        subtitle="人事部門の業務管理画面です。採用、教育研修、評価制度の管理にアクセスできます。"
       />
       <Grid container spacing={3} sx={{ mt: 2 }}>
         <Grid item xs={12} md={4}>
           <Card sx={cardSx} elevation={1}>
             <CardContent>
               <Typography variant="h6" fontWeight={500} gutterBottom>
-                顧客管理
+                採用管理
               </Typography>
               <Typography variant="body2" color="text.secondary" fontWeight={400} sx={{ mb: 2 }}>
-                顧客情報の管理・分析を行います
+                採用活動・面接の管理を行います
               </Typography>
             </CardContent>
             <IconButton sx={cardActionSx}>
@@ -53,10 +53,10 @@ const SalesPage = () => {
           <Card sx={cardSx} elevation={1}>
             <CardContent>
               <Typography variant="h6" fontWeight={500} gutterBottom>
-                売上管理
+                教育研修
               </Typography>
               <Typography variant="body2" color="text.secondary" fontWeight={400} sx={{ mb: 2 }}>
-                売上データの集計・分析を行います
+                社員教育・研修の管理を行います
               </Typography>
             </CardContent>
             <IconButton sx={cardActionSx}>
@@ -68,10 +68,10 @@ const SalesPage = () => {
           <Card sx={cardSx} elevation={1}>
             <CardContent>
               <Typography variant="h6" fontWeight={500} gutterBottom>
-                営業レポート
+                評価制度
               </Typography>
               <Typography variant="body2" color="text.secondary" fontWeight={400} sx={{ mb: 2 }}>
-                営業活動のレポートを確認します
+                社員評価・目標管理を行います
               </Typography>
             </CardContent>
             <IconButton sx={cardActionSx}>
@@ -84,4 +84,4 @@ const SalesPage = () => {
   );
 };
 
-export default SalesPage; 
+export default PersonnelPage; 

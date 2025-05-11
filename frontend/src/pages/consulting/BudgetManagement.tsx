@@ -26,7 +26,8 @@ import {
   SelectChangeEvent,
   Divider,
   Card,
-  CardContent
+  CardContent,
+  ButtonGroup
 } from '@mui/material';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import AddIcon from '@mui/icons-material/Add';
@@ -182,6 +183,7 @@ const BudgetManagement: React.FC = () => {
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
   const [filterYear, setFilterYear] = useState<number>(2023);
   const [filterQuarter, setFilterQuarter] = useState<number>(0); // 0は全期間
+  const [periodFilter, setPeriodFilter] = useState<'all' | 'first_half' | 'second_half'>('all'); // 通年/上期/下期フィルター
   
   // 新しい予算項目のための状態
   const [newBudgetItem, setNewBudgetItem] = useState<Partial<BudgetItem>>({
@@ -203,8 +205,21 @@ const BudgetManagement: React.FC = () => {
   const getFilteredBudgetItems = () => {
     return budgetItems.filter(item => {
       const yearMatch = item.fiscalYear === filterYear;
+      
+      // 「通年」「上期」「下期」フィルター
+      let periodMatch = true;
+      if (periodFilter === 'first_half') {
+        // 上期 = 第1・第2四半期
+        periodMatch = item.fiscalQuarter <= 2;
+      } else if (periodFilter === 'second_half') {
+        // 下期 = 第3・第4四半期
+        periodMatch = item.fiscalQuarter >= 3;
+      }
+      
+      // 四半期フィルター
       const quarterMatch = filterQuarter === 0 || item.fiscalQuarter === filterQuarter;
-      return yearMatch && quarterMatch;
+      
+      return yearMatch && periodMatch && quarterMatch;
     });
   };
 
@@ -216,6 +231,20 @@ const BudgetManagement: React.FC = () => {
   // 四半期フィルター変更ハンドラ
   const handleQuarterChange = (e: SelectChangeEvent<number>) => {
     setFilterQuarter(e.target.value as number);
+  };
+
+  // 期間フィルター変更ハンドラ
+  const handlePeriodFilterChange = (period: 'all' | 'first_half' | 'second_half') => {
+    setPeriodFilter(period);
+    
+    // 期間フィルターと四半期フィルターを連動
+    if (period === 'all') {
+      setFilterQuarter(0); // 通年の場合は四半期フィルターをリセット
+    } else if (period === 'first_half' && filterQuarter > 2) {
+      setFilterQuarter(0); // 上期選択時に下期の四半期が選択されていたらリセット
+    } else if (period === 'second_half' && filterQuarter < 3 && filterQuarter !== 0) {
+      setFilterQuarter(0); // 下期選択時に上期の四半期が選択されていたらリセット
+    }
   };
 
   // 新規予算項目ダイアログを開く
@@ -307,6 +336,50 @@ const BudgetManagement: React.FC = () => {
         />
       </Box>
 
+      {/* グローバルフィルターセクション */}
+      <Paper sx={{ mb: 3, p: 3 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box display="flex" alignItems="center" gap={2}>
+            <FormControl sx={{ minWidth: 120 }}>
+              <InputLabel>年度</InputLabel>
+              <Select
+                value={filterYear}
+                onChange={handleYearChange}
+                label="年度"
+              >
+                <MenuItem value={2022}>2022年</MenuItem>
+                <MenuItem value={2023}>2023年</MenuItem>
+                <MenuItem value={2024}>2024年</MenuItem>
+                <MenuItem value={2025}>2025年</MenuItem>
+              </Select>
+            </FormControl>
+            <ButtonGroup variant="outlined" size="medium">
+              <Button 
+                color={periodFilter === 'all' ? 'primary' : 'inherit'}
+                variant={periodFilter === 'all' ? 'contained' : 'outlined'}
+                onClick={() => handlePeriodFilterChange('all')}
+              >
+                通年
+              </Button>
+              <Button 
+                color={periodFilter === 'first_half' ? 'primary' : 'inherit'}
+                variant={periodFilter === 'first_half' ? 'contained' : 'outlined'}
+                onClick={() => handlePeriodFilterChange('first_half')}
+              >
+                上期
+              </Button>
+              <Button 
+                color={periodFilter === 'second_half' ? 'primary' : 'inherit'}
+                variant={periodFilter === 'second_half' ? 'contained' : 'outlined'}
+                onClick={() => handlePeriodFilterChange('second_half')}
+              >
+                下期
+              </Button>
+            </ButtonGroup>
+          </Box>
+        </Box>
+      </Paper>
+
       {/* 予算サマリーセクション */}
       <Paper sx={{ mb: 3, p: 3 }}>
         <Grid container spacing={3}>
@@ -372,7 +445,17 @@ const BudgetManagement: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {budgetSummary.quarterlyData.map((quarter) => (
+              {budgetSummary.quarterlyData
+                .filter(quarter => {
+                  // 上期/下期フィルターに合わせて四半期データをフィルタリング
+                  if (periodFilter === 'first_half') {
+                    return quarter.quarter <= 2;
+                  } else if (periodFilter === 'second_half') {
+                    return quarter.quarter >= 3;
+                  }
+                  return true;
+                })
+                .map((quarter) => (
                 <TableRow key={quarter.quarter}>
                   <TableCell>{`第${quarter.quarter}四半期`}</TableCell>
                   <TableCell align="right">¥{quarter.target.toLocaleString()}</TableCell>
@@ -400,18 +483,6 @@ const BudgetManagement: React.FC = () => {
           <Box display="flex" alignItems="center" gap={2}>
             <Typography variant="h6">予算項目一覧</Typography>
             <FormControl sx={{ minWidth: 120, ml: 2 }}>
-              <InputLabel>年度</InputLabel>
-              <Select
-                value={filterYear}
-                onChange={handleYearChange}
-                label="年度"
-              >
-                <MenuItem value={2022}>2022年</MenuItem>
-                <MenuItem value={2023}>2023年</MenuItem>
-                <MenuItem value={2024}>2024年</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl sx={{ minWidth: 120 }}>
               <InputLabel>四半期</InputLabel>
               <Select
                 value={filterQuarter}
@@ -419,10 +490,18 @@ const BudgetManagement: React.FC = () => {
                 label="四半期"
               >
                 <MenuItem value={0}>全期間</MenuItem>
-                <MenuItem value={1}>第1四半期</MenuItem>
-                <MenuItem value={2}>第2四半期</MenuItem>
-                <MenuItem value={3}>第3四半期</MenuItem>
-                <MenuItem value={4}>第4四半期</MenuItem>
+                {periodFilter === 'all' || periodFilter === 'first_half' ? (
+                  <>
+                    <MenuItem value={1}>第1四半期</MenuItem>
+                    <MenuItem value={2}>第2四半期</MenuItem>
+                  </>
+                ) : null}
+                {periodFilter === 'all' || periodFilter === 'second_half' ? (
+                  <>
+                    <MenuItem value={3}>第3四半期</MenuItem>
+                    <MenuItem value={4}>第4四半期</MenuItem>
+                  </>
+                ) : null}
               </Select>
             </FormControl>
           </Box>
@@ -525,7 +604,7 @@ const BudgetManagement: React.FC = () => {
                 label="年度"
                 type="number"
                 fullWidth
-                value={newBudgetItem.fiscalYear || 2023}
+                value={newBudgetItem.fiscalYear || filterYear}
                 onChange={(e) => setNewBudgetItem({...newBudgetItem, fiscalYear: parseInt(e.target.value)})}
                 inputProps={{ min: 2020, max: 2030 }}
               />
